@@ -1,0 +1,115 @@
+What are the four facets of learning a programming language?	Syntax & semantics, paradigm, artifact ecosystem (build/run/packages), and tooling.	week01
+What does `cargo run` do?	Compiles AND runs the program. (`cargo build` only compiles.)	week01
+What does `cargo clippy` do?	Runs the linter — a free expert code review. Follow its suggestions.	week01
+What does `cargo fmt` do?	Automatically formats your code.	week01
+What does `cargo test` do?	Compiles and runs unit, integration, and doc tests.	week01
+Difference between shadowing and mutation?	Shadowing creates a NEW binding with the same name (old value hidden). Mutation changes the value in place and requires `let mut`.	week01
+What type does `let x = 5;` infer?	`i32` (the default integer). Floats default to `f64`.	week01
+In Rust, what is an expression?	A block of code that produces a value. The last expression in a block is its value. `if`, `match`, and `{}` blocks are all expressions.	week01
+Why is there no ternary operator in Rust?	Because `if` is an expression — it produces a value directly, so a ternary is unnecessary.	week01
+`String` vs `&str`?	`String` is owned, growable, heap-allocated. `&str` is a borrowed, immutable view (a string slice).	week01
+What is `"hello"` in source code?	A `&'static str` literal baked into the binary — NOT a `String`. Convert with `.to_string()` or `String::from(...)`.	week01
+Does `s.len()` on a String count bytes or characters?	BYTES. Use `s.chars().count()` for characters. `"héllo"` is 6 bytes but 5 chars.	week01
+What does `5 / 2` evaluate to in Rust?	`2` — integer division truncates. Use floats (`5.0 / 2.0`) for `2.5`.	week01
+What is `match` exhaustiveness?	A `match` must cover EVERY possible case — the compiler refuses to compile if a case is missing.	week01
+State the three ownership rules.	(1) Each value has exactly one owner. (2) Only one owner at a time. (3) When the owner goes out of scope, the value is dropped.	week02
+What happens when you pass a `String` to a function?	It MOVES — the function becomes the new owner and the original variable is invalid afterward.	week02
+What does "move" mean in Rust?	Ownership transfers to the new location; the old binding is dead (using it is a compile error).	week02
+State the two borrowing rules.	(1) Many `&T` OR one `&mut T` — never both at once. (2) References must always be valid (never dangle).	week02
+What is NLL (non-lexical lifetimes)?	Borrows end at their LAST USE, not at the end of the scope — so a mutable borrow is allowed after a shared borrow is no longer used.	week02
+`Copy` vs `Clone` vs `Move`?	Copy = implicit bit copy (i32, bool, char, tuples of Copy). Clone = explicit `.clone()` (String, Vec). Move = default for non-Copy types; ownership transfers.	week02
+Why does passing an `i32` not move it, but a `String` does?	`i32` implements `Copy` (cheap bit copy). `String` owns heap data, so passing it transfers ownership (a move).	week02
+What is a slice?	A view into a contiguous range of data — a pointer + a length. `&str` slices a String; `&[i32]` slices a Vec.	week02
+What does `'a` mean in `fn longest<'a>(x: &'a str, y: &'a str) -> &'a str`?	A lifetime parameter: the returned reference is valid as long as both inputs are valid.	week02
+Why can't a function return a reference to a local variable?	The local is dropped when the function returns, so the reference would dangle. The compiler rejects it.	week02
+What is RAII?	Resource Acquisition Is Initialization — the owner of a value IS its cleanup. When the owner goes out of scope, resources are freed deterministically. No GC needed.	week02
+When is a Rust value freed (vs Python's GC)?	When its owner goes out of scope — deterministic and exactly once. Python's GC frees nondeterministically when it notices the object is unreachable.	week02
+struct vs enum — when to use each?	struct = has ALL its fields at once (AND). enum = IS ONE OF several variants (OR).	week03
+What does `#[derive(Debug)]` do?	Auto-implements the Debug trait so the type prints with `{:?}` (programmer-readable).	week03
+Method receiver `&self` vs `&mut self` vs `self`?	`&self` borrows immutably; `&mut self` borrows mutably; `self` CONSUMES the value (moves it).	week03
+Why is exhaustiveness valuable?	Forgetting a case (or adding a new variant later) is a compile error, not a runtime bug. The compiler walks you through every `match` to update.	week03
+`Option<T>` vs `Result<T,E>`?	Option = maybe a value (None / Some). Result = ok OR error with data (Ok / Err). Option asks "is there a value?"; Result asks "did it succeed and what went wrong?"	week03
+What is a newtype?	`struct UserId(u64);` — wraps a primitive to give it meaning and prevent accidentally mixing types. Compile-time type safety.	week03
+What is `if let`?	Shorthand to match ONE pattern and ignore the rest: `if let Some(v) = opt { ... }`.	week03
+Refutable vs irrefutable patterns?	Irrefutable always match (`let x = 5`). Refutable can fail (`let Some(v) = opt`). `let` requires irrefutable; refutable needs `if let` / `match` / `let else`.	week03
+When can you derive `Copy`?	Only when every field is `Copy` (primitives). Types with String/Vec fields cannot be Copy.	week03
+How is Rust's enum different from Java's?	Rust enums can carry data per variant and matches must be exhaustive. Java enums are named constants.	week03
+`Result<T,E>` vs exceptions — key difference?	Errors are RETURN VALUES (part of the function's type signature), not thrown. The compiler forces you to handle them.	week04
+What does `?` do?	Unwraps `Ok(x)` or returns early with `Err` (converted via `From`). The enclosing function must return `Result` or `Option`.	week04
+When to panic vs return `Result`?	Panic = programmer error / broken invariant (unrecoverable). Result = expected, recoverable failure (bad input, missing file, network).	week04
+What two traits must a custom error type implement?	`Display` (printable) and `std::error::Error` (first-class error). Also derive `Debug`.	week04
+What does `ok_or` do?	Converts `Option<T>` → `Result<T,E>`: `None` becomes the `Err(e)` you supply.	week04
+`map` vs `and_then` on Option/Result?	`map` transforms the success value (T→U). `and_then` chains an operation that itself returns Option/Result.	week04
+Why is `expect("msg")` better than `unwrap()`?	It documents WHY the unwrap is safe — if it panics, the message tells you which invariant broke.	week04
+Why does `?` convert errors automatically?	Via the `From` trait — your error type implements `From<std::io::Error>` (or uses `thiserror`'s `#[from]`), so `?` converts for you.	week04
+What does `fn main() -> Result<(), Box<dyn std::error::Error>>` allow?	Using `?` in main; errors bubble up and print to stderr with a non-zero exit code.	week04
+`iter()` vs `into_iter()` vs `iter_mut()`?	`iter()` yields `&T` (borrows). `iter_mut()` yields `&mut T`. `into_iter()` yields owned `T` and CONSUMES the collection.	week05
+What does `for x in v` do to `v`?	Desugars to `into_iter()` — it CONSUMES v. Use `for x in &v` to borrow instead.	week05
+What does `collect()` do?	Gathers iterator items into a collection. The target type comes from context (annotation or return type).	week05
+What does `entry().or_insert(0)` do?	Gets or inserts a key's value, returning a mutable reference to it — the idiomatic "count occurrences" pattern.	week05
+What is monomorphization?	The compiler generates a specialized copy of generic code for each concrete type — generic Rust is as fast as hand-written code (no boxing or erasure).	week05
+`map`, `filter`, `fold`?	map transforms each item; filter keeps items where the predicate is true; fold accumulates with an initial value.	week05
+Are Rust iterators lazy?	Yes — an iterator chain does nothing until something consumes it (collect, sum, a for loop).	week05
+Why does `HashMap::get` return `Option<&V>`?	A missing key is an expected case, not a crash. Returning Option forces you to handle absence.	week05
+`HashMap` vs `BTreeMap`?	HashMap is unordered but fast. BTreeMap keeps keys SORTED (iterate in order, find ranges).	week05
+Translate `[x*x for x in range(10) if x%2==0]` to Rust.	`(0..10).filter(|x| x % 2 == 0).map(|x| x * x).collect()`	week05
+What is a trait?	A set of methods that types can implement — like a Java interface, but with default methods, associated types, and compile-time generics. Rust has no inheritance.	week06
+Generics (`T: Trait`) vs `dyn Trait`?	Generics = monomorphized, zero runtime cost, one concrete type per Vec. dyn = dynamic dispatch via vtable, enables heterogeneous collections.	week06
+What is object safety?	The rules for using a trait as `dyn Trait`. A trait with generic METHODS is not object-safe.	week06
+`Fn` vs `FnMut` vs `FnOnce`?	Fn captures by reference (read-only, many calls). FnMut captures by mutable reference. FnOnce captures by value and can be called once.	week06
+What does `move` do in a closure?	Forces capture by value (ownership) instead of borrowing — needed to send closures to another thread.	week06
+What's a default method?	A trait method with a body — implementors get it for free and can override it.	week06
+Why `Box<dyn Plugin>` for a plugin registry?	Heterogeneous collection — different concrete types can't live in one `Vec<T>`. Trait objects erase the concrete type.	week06
+`Display` vs `Debug`?	Display = human-readable (`{}`), implemented manually. Debug = programmer-readable (`{:?}`), derived.	week06
+What is the coherence rule?	You can implement a trait for a type only if at least one of them is local to your crate.	week06
+Module vs crate?	A crate is a compilation unit (lib.rs or main.rs). Modules organize code WITHIN a crate.	week07
+What does `pub` do? `pub(crate)`?	`pub` makes an item visible outside its module; `pub(crate)` limits visibility to the crate. Privacy is the default.	week07
+Where do integration tests live?	In the `tests/` directory — they test the PUBLIC API exactly as an external consumer would.	week07
+What is a doc test?	A code block inside a `///` doc comment that `cargo test` compiles and runs — your docs can never rot.	week07
+What does `cargo add serde --features derive` do?	Adds serde with the `derive` feature enabled, so you can use `#[derive(Serialize, Deserialize)]`.	week07
+What is a workspace?	A set of related crates in one repo sharing a Cargo.toml, lockfile, and build. Tauri is a workspace of ~10 crates.	week07
+`#[test]` vs `#[should_panic]`?	`#[test]` marks a test function. `#[should_panic]` marks a test that PASSES if it panics.	week07
+What does `#![warn(missing_docs)]` do?	Warns on every public item that has no doc comment — a quality bar real crates use.	week07
+Unit vs integration tests — which sees private items?	Unit tests (inside `#[cfg(test)] mod tests`) can access private items. Integration tests only the public API.	week07
+`Box` vs `Rc` vs `Arc`?	Box = single owner, heap allocation. Rc = refcounted shared ownership, single-threaded. Arc = atomic Rc, safe across threads.	week08
+Why do recursive types need a `Box`?	A recursive type would be infinitely sized. Box adds one pointer of indirection, breaking the recursion.	week08
+What is `RefCell<T>`?	Moves the borrow check to RUNTIME — `borrow()`/`borrow_mut()` panic on violation. For interior mutability (shared mutable data). Single-threaded.	week08
+What is the `Drop` trait?	Code run when a value goes out of scope — RAII cleanup (File closes, MutexGuard unlocks, Box frees).	week08
+Why does `fn first_word(s: &str) -> &str` need no explicit lifetime?	Lifetime elision: with exactly one input reference, its lifetime is assigned to the output.	week08
+What is `'static`?	A reference that lives for the entire program (string literals are `&'static str`).	week08
+Why is `Option<&T>` the same size as `&T`?	Niche optimization — a `&T` is never null, so the null pointer is used as the `None` tag. Free Option.	week08
+Why is `Option<u8>` bigger than `u8`?	`u8` has no niche — all 256 bit patterns are valid values, so a separate tag byte is needed.	week08
+What is `#[repr(C)]` for?	Guarantees a C-compatible memory layout (field order + alignment) — needed for FFI.	week08
+Field/variable drop order?	Struct fields drop in declaration order; variables in a scope drop in reverse declaration order (LIFO).	week08
+`Send` vs `Sync`?	Send = safe to move to another thread. Sync = safe to share by reference across threads. Both are compiler-enforced.	week09
+Why can't `Rc<T>` cross threads?	Its reference count is not atomic — concurrent updates would race. `Rc` is `!Send`.	week09
+Channels vs `Arc<Mutex<T>>`?	Channels pass OWNERSHIP of data (pipelines, decoupled stages). Mutex SHARES mutable data among threads.	week09
+What does `.await` do?	Suspends the current task, freeing the thread for other work, and resumes when the future completes. Non-blocking.	week09
+Threads vs async tasks?	Threads = OS threads, real parallelism, for CPU-bound work. Tasks = lightweight, multiplexed, for I/O-bound work, thousands at once.	week09
+What does `#[tokio::main]` do?	Sets up the tokio runtime and runs your async main on it. Without a runtime, futures never run.	week09
+`tokio::spawn` vs `thread::spawn`?	tokio::spawn creates a lightweight TASK on the runtime; thread::spawn creates an OS thread.	week09
+What does `select!` do?	Waits on multiple futures and runs the code for whichever completes first (like Promise.race).	week09
+Why does Rust guarantee no data races?	The type system enforces Send/Sync at compile time — a data race is unrepresentable.	week09
+What are the four powers of `unsafe`?	(1) Dereference raw pointers. (2) Call unsafe functions / FFI. (3) Access or mutate mutable statics. (4) Implement unsafe traits (Send/Sync).	week10
+Does `unsafe` disable the borrow checker?	No — it only grants the four powers. All safe rules still apply inside an unsafe block.	week10
+Why is dereferencing a raw pointer unsafe?	The pointer could be null, dangling, misaligned, or aliased — the compiler can't verify the invariants.	week10
+`CString` vs `CStr`?	CString = owned, NUL-terminated (built with `CString::new`, errors on embedded NUL). CStr = borrowed view into a C string.	week10
+What does `#[no_mangle]` do?	Prevents symbol name mangling so C can link to the function by its plain name.	week10
+What is a `cdylib`?	A C-compatible dynamic library (.so / .dll / .dylib) linkable from C, Python ctypes, or any FFI-capable language.	week10
+What is the safe-wrapper pattern?	Confine all `unsafe` to small, reviewed functions that expose a SAFE API — callers never touch unsafe.	week10
+Who frees memory returned from an extern "C" function?	Depends on the function's documented contract (caller or callee). Document the ownership in the wrapper's SAFETY comment.	week10
+What does `#[repr(C)]` guarantee?	Exact C-compatible layout (field order + alignment) — a stable ABI contract for FFI.	week10
+Order Tauri's stack from top to bottom.	tauri → tauri-runtime → tauri-runtime-wry → wry (webview) → tao (windowing).	week11
+What does `#[tauri::command]` do?	Turns a Rust function into one callable from the frontend via invoke — generates the IPC plumbing.	week11
+Sync vs async Tauri commands?	Async commands run on tokio (for slow I/O, keeps the UI responsive). Sync commands run on the main thread (fast work).	week11
+How do you share state with Tauri commands?	Register with `app.manage(MyState)`, then inject with `state: State<'_, MyState>`.	week11
+The three jobs of a Tauri plugin?	(1) Rust functionality. (2) Glue/hooks to integrate into an app. (3) A JavaScript API for the frontend.	week11
+What are Tauri capabilities/permissions for?	Security — they declare which commands the frontend may invoke, limiting blast radius.	week11
+Where does most `unsafe` live in Tauri?	In wry and tao — they talk to the OS webview/windowing C APIs directly.	week11
+What's the first thing to read in an unfamiliar codebase?	README, then ARCHITECTURE.md, then the tests, then trace one feature end-to-end from its entry point.	week11
+What is a "good first issue"?	A small, well-scoped, maintainer-curated issue for newcomers — low risk and teaches the contribution workflow.	week11
+Why split a core library from a Tauri app?	Testability (pure `cargo test`, no windowing system) and decoupling (portable core, thin app layer).	week12
+Why `Mutex` (not `RefCell`) for Tauri state?	Commands run on tokio's multi-threaded runtime, so state needs thread-safe interior mutability. RefCell is `!Sync`.	week12
+Why return `Result<Note, String>` from a command?	String serializes cleanly to the frontend. Tradeoff: the frontend loses structured error info (use an enum if it must branch on error type).	week12
+Why is the `Store` not wrapped in `Arc`?	There's exactly one owner (the app), shared via State + Mutex. Arc is only needed for multiple independent owners.	week12
+Safest way to add FFI to an app?	Confine it to one small module using the safe-wrapper pattern, with a documented `// SAFETY:` comment.	week12

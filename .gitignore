@@ -1,0 +1,35 @@
+# Rust build artifacts
+**/target/
+
+# Anki deck build environment
+anki/.venv/
+anki/__pycache__/
+anki/*.py[cod]
+
+# Python cache and tooling artifacts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Environment and local configuration
+.env
+.env.*
+!.env.example
+
+# Editor and IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Operating-system artifacts
+.DS_Store
+Thumbs.db
+
+# Logs and temporary files
+*.log
+*.tmp
+*.temp
