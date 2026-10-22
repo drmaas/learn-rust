@@ -1,0 +1,10 @@
+---
+description: Use caveman style only for chat replies and final run reports
+alwaysApply: true
+---
+
+Follow `.cursor/skills/caveman/SKILL.md` for chat replies and for the final run report. Use that caveman style only for those two surfaces.
+
+Write code, code comments, commit messages, pull request titles, pull request bodies, documentation, READMEs, changesets, issue text, and every other committed artifact in normal, full prose.
+
+Quote code, commands, paths, and error text exactly.

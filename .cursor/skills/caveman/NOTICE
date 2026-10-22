@@ -1,0 +1,19 @@
+Vendored from https://github.com/JuliusBrussee/caveman
+File: skills/caveman/SKILL.md
+Commit: bad48a0e1df55e05e3f52249afa35ecc1909ee76
+
+The Cursor plugin manifest (`.cursor-plugin/plugin.json`) points Cursor at `./skills/`. `skills/caveman/SKILL.md` is that skill, byte for byte. `SKILL.md` in this directory is unchanged from that file.
+
+Upstream copyright and license notice, limited to the notices that apply to this skill:
+
+Caveman
+Copyright 2026 Julius Brussee
+
+Before Caveman 3.0.0, the parts of this repository outside the Engine-linked
+runtime were licensed under the MIT License (see LICENSING.md). Contributions
+made to those parts before 3.0.0 were received under the MIT License and remain
+available under it. Its copyright and permission notice is retained in
+LICENSE-MIT.
+
+Current terms: Apache License, Version 2.0 (`LICENSE` in this directory).
+The pre-3.0.0 MIT text is in `LICENSE-MIT`.
